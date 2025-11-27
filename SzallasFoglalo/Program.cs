@@ -191,7 +191,7 @@ namespace SzallasFoglalo
             var listView = new ListView
             {
                 Location = new Point(20, 80),
-                Size = new Size(contentPanel.Width - 40, contentPanel.Height - 100),
+                Size = new Size(contentPanel.Width - 40, contentPanel.Height - 140),
                 View = View.Details,
                 FullRowSelect = true,
                 GridLines = true,
@@ -220,6 +220,46 @@ namespace SzallasFoglalo
             }
 
             contentPanel.Controls.Add(listView);
+
+            var btnTorles = new MaterialRaisedButton
+            {
+                Text = "KIJELÖLT SZÁLLÁS TÖRLÉSE",
+                Location = new Point(20, contentPanel.Height - 50),
+                Size = new Size(250, 40),
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Left
+            };
+
+            btnTorles.Click += (s, e) =>
+            {
+                if (listView.SelectedItems.Count > 0)
+                {
+                    var szallas = listView.SelectedItems[0].Tag as Szallas;
+                    if (szallas != null)
+                    {
+                        var result = MessageBox.Show(
+                            $"Biztosan törli a(z) \"{szallas.Nev}\" szállást? A hozzá tartozó foglalások is törlődnek.",
+                            "Megerősítés",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question);
+
+                        if (result == DialogResult.Yes)
+                        {
+                            // Remove related reservations
+                            foglalasok.RemoveAll(f => f.Szallas == szallas);
+                            szallasok.Remove(szallas);
+                            MentAdatok();
+                            MutatSzallasok();
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Kérem válasszon ki egy szállást!", "Figyelmeztetés",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            };
+
+            contentPanel.Controls.Add(btnTorles);
         }
 
         private void MutatUjSzallas()
@@ -498,6 +538,7 @@ namespace SzallasFoglalo
             contentPanel.Controls.Add(reszletekLabel);
             y += 70;
 
+            
             ejszakakText.TextChanged += (s, e) =>
             {
                 if (szallasCombo.SelectedItem is Szallas szallas && int.TryParse(ejszakakText.Text, out int ejszakak) && ejszakak > 0)
