@@ -244,7 +244,7 @@ namespace SzallasFoglalo
 
                         if (result == DialogResult.Yes)
                         {
-                            // Remove related reservations
+                            
                             foglalasok.RemoveAll(f => f.Szallas == szallas);
                             szallasok.Remove(szallas);
                             MentAdatok();
